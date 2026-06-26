@@ -60,7 +60,7 @@ Add validation and proper exception throwing to the following methods:
 - **`SmartThermostat.setTemperature(double temp)`** — throw `InvalidValueException` when `temp` is outside `[10.0, 35.0]`
 - **`SmartLock.validatePin(String pin)`** — throw `InvalidCommandException` when the PIN is `null` or does not match
 - **`HomeController.sendCommand(String fullCommand)`** — wrap the method body in `try-catch-finally`:
-  - Catch exceptions, add contextual information, and re-throw
+  - Catch `HomeAutomationException`, then throw a **new** `HomeAutomationException` whose message includes the `deviceId` and the original `fullCommand` string (e.g. `"Command '" + fullCommand + "' failed for device '" + deviceId + "'"`) and pass the caught exception as the `cause` argument — do **not** re-throw the original exception unchanged
   - The `finally` block must always print: `Command processing ended for device [id]`
 
 Update `Main` to handle or declare all checked exceptions where needed.
@@ -69,13 +69,14 @@ Update `Main` to handle or declare all checked exceptions where needed.
 
 ## Task 3 — SLF4J + Logback Logging
 
-- Add a `private static final Logger` field to `HomeController` and `SmartLock`
+- Add a `private static final Logger` field to `HomeController` and `SmartLock` — use **SLF4J** (`org.slf4j.Logger` / `org.slf4j.LoggerFactory`): `private static final Logger logger = LoggerFactory.getLogger(ClassName.class);`
 - Log the following events in `HomeController`:
   - `DEBUG` — a command is received (include device ID and raw command)
   - `INFO` — a command executed successfully
   - `WARN` — the target device is offline and the command is skipped
   - `ERROR` — an exception is caught during command processing
-- `SmartLock` must log at `ERROR` every failed unlock attempt (security audit trail)
+- **Replace** the corresponding `System.out.println` statements in `HomeController.sendCommand` with these logger calls; remove the old print statements rather than keeping both
+- `SmartLock` must log at `ERROR` every failed unlock attempt (security audit trail) — replace the existing `System.out.println("SECURITY ALERT: ...")` line with the logger call
 - In `logback.xml`, uncomment the `FILE` appender and register it in the root logger
 - **Demonstration:** change the root logger level to `WARN`, run the app, and observe which log lines no longer appear in the output
 
