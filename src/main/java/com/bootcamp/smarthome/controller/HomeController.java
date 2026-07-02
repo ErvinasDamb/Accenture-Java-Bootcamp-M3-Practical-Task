@@ -3,6 +3,9 @@ package com.bootcamp.smarthome.controller;
 import com.bootcamp.smarthome.device.Device;
 import com.bootcamp.smarthome.exception.HomeAutomationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Central hub that manages all registered smart devices.
  *
@@ -11,6 +14,7 @@ import com.bootcamp.smarthome.exception.HomeAutomationException;
  */
 public class HomeController {
 
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
     public static final int MAX_DEVICES = 8;
 
     private final Device[] devices = new Device[MAX_DEVICES];
@@ -71,23 +75,26 @@ public class HomeController {
      */
     public void sendCommand(String fullCommand) throws HomeAutomationException {
         String deviceId = CommandParser.extractDeviceId(fullCommand);
+        logger.debug("Received command for device {}: {}", deviceId, fullCommand);
         try {
             String command = CommandParser.extractCommand(fullCommand);
 
             Device device = findDevice(deviceId);
 
             if (device == null) {
-                System.out.println("Device not found: " + deviceId);
+                logger.error("Device not found: {}", deviceId);
                 return;
             }
 
             if (!device.isOnline()) {
-                System.out.println("WARNING: Device '" + deviceId + "' is offline — command skipped.");
+                logger.warn("Device '{}' is offline — command skipped.", deviceId);
                 return;
             }
 
             device.executeCommand(command);
+            logger.info("Command executed successfully: {}", fullCommand);
         } catch (HomeAutomationException e) {
+            logger.error("Exception caught during command processing for device {}: {}", deviceId, e.getMessage());
             throw new HomeAutomationException("Command '" + fullCommand + "' failed for device '" + deviceId + "'", e);
         } finally {
             System.out.println("Command processing ended for device " + deviceId);
