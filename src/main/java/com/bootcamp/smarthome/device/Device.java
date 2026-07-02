@@ -1,5 +1,8 @@
 package com.bootcamp.smarthome.device;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Abstract base class representing a smart home device.
  *
@@ -9,10 +12,12 @@ package com.bootcamp.smarthome.device;
  *
  * Prior knowledge required: abstract classes, encapsulation, inheritance.
  */
+@Getter
 public abstract class Device {
 
     private final String deviceId;
     private final String name;
+    @Setter
     private boolean isOnline;
     private boolean isOn;
 
@@ -51,30 +56,6 @@ public abstract class Device {
     public void turnOff() {
         isOn = false;
         System.out.println(name + " turned OFF.");
-    }
-
-    // -------------------------------------------------------------------------
-    // Getters / setters
-    // -------------------------------------------------------------------------
-
-    public String getDeviceId() {
-        return deviceId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public boolean isOnline() {
-        return isOnline;
-    }
-
-    public boolean isOn() {
-        return isOn;
-    }
-
-    public void setOnline(boolean online) {
-        isOnline = online;
     }
 
     @Override
