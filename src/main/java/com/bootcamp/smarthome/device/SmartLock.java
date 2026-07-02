@@ -31,7 +31,7 @@ public class SmartLock extends Device {
      * Validates the supplied PIN against the stored PIN.
      */
     public void validatePin(String pin) throws InvalidCommandException {
-        if (pin == null || !pin.equals(storedPin)) {
+        if (pin == null || storedPin == null || !pin.equals(storedPin)) {
             logger.error("SECURITY ALERT: Incorrect PIN entered for {}.", getName());
             throw new InvalidCommandException("Invalid PIN");
         }
